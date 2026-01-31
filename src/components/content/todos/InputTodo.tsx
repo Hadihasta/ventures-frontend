@@ -26,10 +26,10 @@ const handleAdd = () => {
   setLoading(true)
   onStartAdd()
 
-  const value = title // 🔥 simpan value saat klik
+  const value = title
 
   setTimeout(() => {
-    dispatch(addTodo(value)) // ✅ BUKAN debouncedTitle
+    dispatch(addTodo(value)) 
     setTitle('')
     setLoading(false)
   }, 500)
