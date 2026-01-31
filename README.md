@@ -31,3 +31,9 @@ This project is intended for  showcasing:
 If you encounter any issues while running this project locally, feel free to contact me via email:
 
 📧 **HijriHadi@gmail.com**
+
+
+## 🙏 Acknowledgement
+
+Thank you for the opportunity to work on and present this project.  
+I appreciate the time and consideration given to reviewing my work, and I hope this implementation provides a clear overview of my approach, coding style, and technical capabilities.
