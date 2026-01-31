@@ -1,146 +1,95 @@
 'use client'
-import {
-  Plus,
-  Trash2,
-  CheckCircle2,
-  Circle,
-} from 'lucide-react'
+import { Trash2, CheckCircle2, Circle } from 'lucide-react'
 import { useEffect, useState } from 'react'
 
-import { Todo } from '@/app/todos/page'
-import { Filter } from '@/app/todos/page'
-import { dummyTodos } from '@/data/todo'
+import { useDispatch, useSelector } from 'react-redux'
+import type { RootState, AppDispatch } from '@/store'
+
+import { toggleTodo, deleteTodo, setTodos } from '@/store/todoSlice'
+
+import InputTodo from './InputTodo'
+import FilterTodo from './FilterTodo'
+import TodoSkeleton from './TodoSkeleton'
 
 const TodoCard = () => {
-  const [todos, setTodos] = useState<Todo[]>([])
-  const [title, setTitle] = useState('')
-  const [filter, setFilter] = useState<Filter>('all')
-
-
+   const [showSkeleton, setShowSkeleton] = useState(false)
+  const [leavingSkeleton, setLeavingSkeleton] = useState(false)
+  const { todos, filter } = useSelector((state: RootState) => state.todo)
+  const dispatch = useDispatch<AppDispatch>()
 
   useEffect(() => {
-  const stored = localStorage.getItem('todos')
+    const stored = localStorage.getItem('todos')
+    if (stored) {
+      dispatch(setTodos(JSON.parse(stored)))
+    }
+  }, [dispatch])
 
-  if (stored) {
-    setTodos(JSON.parse(stored))
-    // kalau udah ada di local storage gk usah di restore lagi
-  } else {
-    localStorage.setItem('todos', JSON.stringify(dummyTodos))
-    setTodos(dummyTodos)
-    // kalau belum ada dummy data masukan ke local 
-  }
-}, [])
+  useEffect(() => {
+    localStorage.setItem('todos', JSON.stringify(todos))
 
-  const addTodo = () => {
-    if (!title.trim()) return
+    if (showSkeleton) {
+      const timeout = setTimeout(() => {
+        setLeavingSkeleton(true)
 
-    setTodos([
-      ...todos,
-      {
-        id: Date.now(),
-        title,
-        completed: false,
-      },
-    ])
-    setTitle('')
-  }
+        setTimeout(() => {
+          setShowSkeleton(false)
+          setLeavingSkeleton(false)
+        }, 200)
+      }, 200)
 
-  const toggleTodo = (id: number) => {
-    setTodos(todos.map(todo =>
-      todo.id === id
-        ? { ...todo, completed: !todo.completed }
-        : todo
-    ))
+      return () => clearTimeout(timeout)
+    }
+  }, [todos, showSkeleton])
+
+
+  const handleToggleTodo = (id: number) => {
+    dispatch(toggleTodo(id))
   }
 
-  const deleteTodo = (id: number) => {
-    setTodos(todos.filter(todo => todo.id !== id))
+  const handleDeleteTodo = (id: number) => {
+    dispatch(deleteTodo(id))
   }
 
-  const filteredTodos = todos.filter(todo => {
+  const filteredTodos = todos.filter((todo) => {
     if (filter === 'completed') return todo.completed
     if (filter === 'pending') return !todo.completed
     return true
   })
 
-
   return (
- <>
-    {/* Input */}
-        <div className="flex gap-3 mb-6">
-          <input
-            value={title}
-            onChange={e => setTitle(e.target.value)}
-            placeholder="Add new task..."
-            className="flex-1 px-4 py-3 rounded-xl border border-blue-200 focus:outline-none focus:ring-2 focus:ring-blue-300"
-          />
-          <button
-            onClick={addTodo}
-            className="bg-blue-600 text-white p-3 rounded-xl hover:bg-blue-700 transition"
+    <>
+      <InputTodo onStartAdd={() => setShowSkeleton(true)} />
+
+      <FilterTodo />
+
+      <ul className="space-y-3">
+  
+        {filteredTodos.map((todo) => (
+          <li
+            key={todo.id}
+            className="flex items-center gap-3 p-4 rounded-xl border border-blue-100 hover:bg-blue-50 transition"
           >
-            <Plus size={20} />
-          </button>
-        </div>
-
-        {/* Filter */}
-        <div className="flex gap-2 mb-6">
-          {(['all', 'completed', 'pending'] as Filter[]).map(item => (
-            <button
-              key={item}
-              onClick={() => setFilter(item)}
-              className={`px-4 py-2 rounded-xl text-sm font-medium transition
-                ${
-                  filter === item
-                    ? 'bg-blue-600 text-white'
-                    : 'bg-blue-50 text-blue-600 hover:bg-blue-100'
-                }`}
-            >
-              {item.toUpperCase()}
+            <button onClick={() => handleToggleTodo(todo.id)}>
+              {todo.completed ? <CheckCircle2 className="text-blue-600" /> : <Circle className="text-gray-400" />}
             </button>
-          ))}
-        </div>
 
-        {/* List */}
-        <ul className="space-y-3">
-          {filteredTodos.map(todo => (
-            <li
-              key={todo.id}
-              className="flex items-center gap-3 p-4 rounded-xl border border-blue-100 hover:bg-blue-50 transition"
+            <span className={`flex-1 ${todo.completed ? 'line-through text-gray-400' : 'text-gray-700'}`}>
+              {todo.title}
+            </span>
+
+            <button
+              onClick={() => handleDeleteTodo(todo.id)}
+              className="text-red-400 hover:text-red-600 transition"
             >
-              <button onClick={() => toggleTodo(todo.id)}>
-                {todo.completed ? (
-                  <CheckCircle2 className="text-blue-600" />
-                ) : (
-                  <Circle className="text-gray-400" />
-                )}
-              </button>
+              <Trash2 size={18} />
+            </button>
+          </li>
+        ))}
+     {showSkeleton && <TodoSkeleton leaving={leavingSkeleton} />}
+      </ul>
 
-              <span
-                className={`flex-1 ${
-                  todo.completed
-                    ? 'line-through text-gray-400'
-                    : 'text-gray-700'
-                }`}
-              >
-                {todo.title}
-              </span>
-
-              <button
-                onClick={() => deleteTodo(todo.id)}
-                className="text-red-400 hover:text-red-600 transition"
-              >
-                <Trash2 size={18} />
-              </button>
-            </li>
-          ))}
-        </ul>
-
-        {filteredTodos.length === 0 && (
-          <p className="text-center text-gray-400 mt-8">
-            No tasks found ✨
-          </p>
-        )}
-        </>
+      {filteredTodos.length === 0 && <p className="text-center text-gray-400 mt-8">No tasks found ✨</p>}
+    </>
   )
 }
 

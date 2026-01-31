@@ -1,8 +1,12 @@
 import type { Metadata } from "next";
 
 import "@/styles/globals.css";
-
 import { Inter } from "next/font/google";
+
+
+import Providers from "@/components/provider/Provider";
+
+
 
 const inter = Inter({
   subsets: ["latin"],
@@ -19,13 +23,13 @@ export default function RootLayout({
 }: Readonly<{
   children: React.ReactNode;
 }>) {
-  return (
+ return (
     <html lang="en">
-      <body
-        className={`${inter.variable} antialiased`}
-      >
-        {children}
+      <body>
+        <Providers>
+          {children}
+        </Providers>
       </body>
     </html>
-  );
+  )
 }
