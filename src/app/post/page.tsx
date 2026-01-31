@@ -4,6 +4,8 @@ import { useEffect, useState } from 'react'
 import { instance } from '@/lib/axios'
 import PostList from '@/components/content/post/PostList'
 import CommentList from '@/components/content/post/CommentList'
+import Link from 'next/link'
+import { ArrowLeft } from 'lucide-react'
 
 const DEBOUNCE_DELAY = 500
 
@@ -105,6 +107,14 @@ export default function PostPage() {
   return (
     <div className="min-h-screen bg-[#f5f9ff] px-6 py-16">
       <div className="max-w-5xl mx-auto">
+            <Link
+            href="/"
+            className="p-2 rounded-xl "
+            aria-label="Back"
+          >
+            <ArrowLeft className="text-blue-600" />
+          </Link>
+
         <h1 className="text-3xl font-bold text-blue-700 mb-6">Post App</h1>
 
         {/* Search (onChange only) */}

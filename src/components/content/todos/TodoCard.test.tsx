@@ -3,6 +3,12 @@ import userEvent from '@testing-library/user-event'
 import TodoCard from './TodoCard'
 import { renderWithStore } from './test-utils'
 
+
+// what this test do adds todo when input filled and add button clicked ,
+//  shows only pending todos when filter is pending , 
+// shows only completed todos when filter is completed ,
+//  shows all todos when filter is all
+
 describe('TodoCard', () => {
   describe('Add Todo', () => {
     beforeEach(() => {
