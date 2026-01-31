@@ -72,7 +72,7 @@ describe('TodoCard', () => {
       expect(screen.getByText('Learn Next.js')).toBeInTheDocument()
     })
 
-    // --->
+
     it('shows only completed todos when filter is completed', async () => {
       renderWithStore(<TodoCard />, { preloadedState })
 

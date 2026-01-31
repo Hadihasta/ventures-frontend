@@ -1,7 +1,7 @@
 import axios, { AxiosInstance, InternalAxiosRequestConfig } from "axios";
 
 export const instance: AxiosInstance = axios.create({
-  baseURL: "https://jsonplaceholder.typicode.com/",
+  baseURL: process.env.NEXT_PUBLIC_API_URL,
   timeout: 10000,
 });
 
