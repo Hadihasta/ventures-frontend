@@ -9,11 +9,11 @@ export const dummyTodos: Todo[] = [
   {
     id: 2,
     title: 'Build Todo App',
-    completed: true,
+    completed: false,
   },
   {
     id: 3,
     title: 'Test offline mode',
-    completed: false,
+    completed: true,
   },
 ]

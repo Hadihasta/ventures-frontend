@@ -5,7 +5,7 @@ import { useState } from 'react'
 import { useDispatch } from 'react-redux'
 import type { AppDispatch } from '@/store'
 import { addTodo } from '@/store/todoSlice'
-import { useDebounce } from '@/app/hooks/useDebounce'
+import { useDebounce } from '@/hooks/useDebounce'
 
 
 type InputTodoProps = {
@@ -19,20 +19,21 @@ const InputTodo = ({ onStartAdd }: InputTodoProps) => {
 
   const dispatch = useDispatch<AppDispatch>()
 
-  const debouncedTitle = useDebounce(title, 300)
+ 
+const handleAdd = () => {
+  if (!title.trim()) return
 
-  const handleAdd = () => {
-    if (!debouncedTitle.trim()) return
+  setLoading(true)
+  onStartAdd()
 
-    setLoading(true)
+  const value = title // 🔥 simpan value saat klik
 
-    onStartAdd()
-    setTimeout(() => {
-      dispatch(addTodo(debouncedTitle))
-      setTitle('')
-      setLoading(false)
-    }, 500)
-  }
+  setTimeout(() => {
+    dispatch(addTodo(value)) // ✅ BUKAN debouncedTitle
+    setTitle('')
+    setLoading(false)
+  }, 500)
+}
 
   return (
     <div className="flex gap-3 mb-6">
@@ -44,6 +45,7 @@ const InputTodo = ({ onStartAdd }: InputTodoProps) => {
       />
 
       <button
+      aria-label="add todo"
         onClick={handleAdd}
         disabled={loading}
         className="bg-blue-600 text-white p-3 rounded-xl hover:bg-blue-700 transition disabled:opacity-70"
